@@ -1,0 +1,202 @@
+//extern.h
+
+typedef unsigned char	byte;
+typedef unsigned short	word;
+typedef unsigned long	dword;
+
+
+extern byte ADC1_index;
+extern word ADC1_data[4];
+
+extern double Current_mes;
+extern double Volt_mes;
+
+extern dword P_M_sum;
+extern float P_M_avr;
+extern float P_M_actual;
+extern float Current_angle;
+
+extern float CT_ad_avr;
+
+extern dword timer2_ms_cnt;
+extern byte timer2_ms_cnt_start;
+
+extern word t2_min_cnt;
+extern byte exerc_time_start;
+extern word min_cnt; 
+
+extern float Current_actual;
+extern float Load1_g, Load2_g;
+
+extern byte PAUSE_F;
+extern byte Motor_Run_F;
+
+extern byte num_of_workouts;
+extern byte Motor_BUSY;
+
+extern byte set_exerc_time;
+
+extern byte Dir_of_rotation;
+
+extern byte Passive_ing;
+
+//셀프체크
+extern byte Error_Check;
+extern byte check_step;
+extern byte shift_step;
+extern byte Priority_dir_set;
+
+extern float Bf_pm_avr;
+extern float Af_pm_avr; 
+extern float Change_pm_avr;
+
+extern float Bf_ct_avr;
+extern float Af_ct_avr; 
+extern float Change_ct_avr;
+
+extern int Bf_encoder_avr;
+extern int Af_encoder_avr;
+extern int Change_encoder_avr;
+
+extern dword Bf_load_avr;
+extern dword Af_load_avr;
+extern int Change_load_avr;
+
+extern byte CW_pm_check_ok;
+extern byte CCW_pm_check_ok;
+
+extern byte CW_ct_check_ok;
+extern byte CCW_ct_check_ok;
+
+extern byte CW_encoder_check_ok;
+extern byte CCW_encoder_check_ok;
+
+extern byte CW_load_check_ok;
+extern byte CCW_load_check_ok;
+
+extern byte CCW_priority_mode;
+
+extern byte Self_check_end;
+extern byte Encoder_dir;
+
+//로드셀
+extern int diff;
+extern dword Load1_g_8, Load2_g_8;
+extern dword ADC_Result1;
+extern dword ADC_Result2;
+
+//디버깅
+extern word adc_value;
+extern byte exercise_mode;
+
+
+//user_define
+#define LED1_OFF	GPIOB->ODR |= GPIO_PIN_12;	 //PB12---->1
+#define LED1_ON		GPIOB->ODR &= ~GPIO_PIN_12;	 //PB12---->0
+
+
+
+extern dword ReadCount1(void);
+extern dword ReadCount2(void);
+extern byte LOADC_EN;
+
+//테스트용 (지워도됨)
+extern byte cur_index;
+extern float cur_measurement[250];
+
+
+
+//RS232 통신(UART2)
+#define UART_STX	0x01	
+
+extern void UART2_exe(void);
+
+typedef struct str_para
+{
+	float current_angle;		//현재각도
+	float current;				//전류
+	float L_load;				//로드셀 왼쪽 출력값(부하)
+	float R_load;				//로드셀 오른쪽 출력값(부하)
+	word  current_speed;		//현재속도(RPM)
+	byte  remain_time;			//남은 운동시간(분)
+	byte  cnt;					//운동진행횟수
+	byte  dir;					//방향(0:up_dir, 1:down_dir)
+	byte  velocity_mode;		//현재속도모드(0:등속, 1:가속)
+	byte  state;				//현재 운동상황(0:운동중, 1:운동종료, 2:하한각이동중, 3:일시정지상태, 4:일시정지 완료)
+	float upper_limit_angle;	//측정모드(상한각)
+	float lower_limit_angle;	//측정모드(하한각)
+	
+	/*****Error para*****/
+	byte motor_error;			//모터 에러(0:체크중, 1:정상, 2:에러)
+	byte CT_error;				//전류센서 에러(0:체크중, 1:정상, 2:에러)
+	byte PM_error;				//각도센서 에러(0:체크중, 1:정상, 2:에러)
+	byte load_error;			//로드셀  에러(0:체크중, 1:정상, 2:에러)
+	byte encoder_error;			//엔코더  에러(0:체크중, 1:정상, 2:에러)
+	byte speed_error;			//설정범위이탈 에러(0:정상, 1:에러)
+	byte ESB_state;				//비상정지버튼(0:안눌림, 1:눌림)
+}str_para;
+
+extern str_para Para;
+#define PARA_ADDRESS	&Para
+
+typedef struct USER_RUN_SETTING
+{
+	byte motion;				//운동 부위(0:팔꿈치, 1:어깨, 2:무릎)
+	byte mode;					//운동 모드(0:일반, 1:적응, 2:집중)
+	byte exerc_time;			//운동 시간(분)									
+	byte exerc_num;				//운동 횟수		
+	byte adaptation_angle;		//적응 각도	
+	byte repeat_num;			//반복 횟수	
+	byte concentration_angle;	//집중 각도
+	byte application_location;	//적용 위치(0:하한각, 1:상하한각, 2:상한각)
+	byte speed_mode;			//속도 모드(0:가속, 1:등속)	
+	byte speed;					//운동 속도 단계(1~7)
+	float upper_angle;			//상한 각도
+	float lower_angle;			//하한 각도
+	byte upper_stop_time;		//상한 정지 시간(초)	
+	byte lower_stop_time;		//하한 정지 시간(초)		
+	byte cnt_mode;				//운동 시간,횟수모드 설정(0:운동시간, 1:운동횟수)			
+	byte exerc_start;			//(0:평상시, 1:운동시작, 2:일시정지, 3:종료, 4:수동모드 1도 up, 5:수동모드 1도 down, 6:수동모드 키다운up, 7:수동모드 키다운down, 8:측정모드, 9:측정모드 일시정지)
+	byte calibration;			//(0:평상시, 1:Calibration 진행중)
+	byte ad_start;				//(0:평상시, 1:각도 AD시작1, 2:각도 AD시작2 3:무게 AD시작1, 4:무게 AD시작2 5:전류 AD시작1, 6:전류 AD시작2)
+	float real_value			//(0:평상시, 캘리브레이션시 정확한 각도,전류,로드셀 값)
+}USER_RUN_SETTING;  
+
+extern USER_RUN_SETTING		_USER_RUN_SETTING;
+#define USER_SET_ADDRESS	&_USER_RUN_SETTING
+
+typedef struct CALIBRATION_SETTING
+{
+	float angle_45_AD;			//45도에서의 AD평균값
+	float angle_135_AD;			//135도에서의 AD평균값
+	float load_2kg_AD;			//2kg에서의 AD평균값
+	float load_10kg_AD;			//10kg에서의 AD평균값
+	float current_200mA_AD;		//0.2A에서의 AD평균값
+	float current_2A_AD;		//2A에서의 AD평균값
+	byte AD_ok;					//(0:평상시, 1:AD완료)
+}CALIBRATION_SETTING;
+
+extern CALIBRATION_SETTING		_CALIBRATION_SETTING;
+#define _CALIBRATION_ADDRESS	&_CALIBRATION_SETTING
+
+
+extern word CheckSum(byte *Data, byte Len);
+extern void RS232_putchar(byte RS232_tx_val);
+
+
+extern byte Rx2_buf[100];
+
+//CRC16 버그때문에 테스트용으로
+extern byte CheckSum_EN;
+extern byte Rx2_index;
+extern word CheckSum_data;
+extern word test_crc1;
+extern word test_crc2;
+
+extern byte Checksum_H;
+extern byte Checksum_L;
+extern byte CheckSum_ing;
+
+extern byte Rcv2_ok;
+extern byte RS485_dead_time;	//1msec down counter
+extern byte Rx2_step;

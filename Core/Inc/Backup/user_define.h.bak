@@ -1,0 +1,42 @@
+//Relay
+#define RLY_H	GPIOA->ODR |= GPIO_PIN_10	//PA10 <= 1
+#define RLY_L	GPIOA->ODR &= ~GPIO_PIN_10	//PA10 <= 0
+
+// LOAD Cell CLK : Active Low(PB2, PB1)
+#define LOADC_CLK1_LOW	 GPIOB->BSRR  = (uint32_t)GPIO_PIN_2<<16	//PB2 <= 0
+#define LOADC_CLK1_HIGH	 GPIOB->BSRR  = (uint32_t)GPIO_PIN_2 		//PB2 <= 1
+#define LOADC_CLK2_LOW	 GPIOB->BSRR  = (uint32_t)GPIO_PIN_1<<16	//PB1 <= 0
+#define LOADC_CLK2_HIGH	 GPIOB->BSRR  = (uint32_t)GPIO_PIN_1 		//PB1 <= 1
+
+// LOAD Cell DataOut(DO) : PB10, PB11
+#define LOADC_DO1		(((GPIOB->IDR)>>11) & 0x1)	//PB11's IDR : Input Data Register
+#define LOADC_DO2		(((GPIOB->IDR)>>10) & 0x1)	//PB10's IDR : Input Data Register
+
+//Emergency Stop Switch Input : PA15
+#define EMS_SW		((GPIOA->IDR)>>15 & 0x01)	//PA15's IDR : Input Data Register
+
+//Motor drive
+#define CW		0	//시계방향
+#define CCW		1	//반시계방향
+#define STOP	2	//운동중이 아닐때(일시정지상태는 제외)
+
+#define CONSTANT_MODE	1	//등속모드
+#define ACCEL_MODE		0	//가속모드
+
+#define NORMAL			1	//일반운동
+#define ADAPTIVE		2	//적응운동
+#define INTENSIVE		3	//집중운동
+#define ADJUSTMENT		4	//각도조정
+
+//적용위치
+#define LOWER	0	//하한각
+#define	UP_LOW	1	//상하한각
+#define UPPER	2	//상한각
+
+//운동부위
+#define Elbow		0	//팔꿈치
+#define Shoulder	1	//어깨
+#define Knee		2	//무릎
+
+//Self check
+#define Self_Check 	0	//0:셀프체크 기능 OFF, 1:셀프체크 기능 ON
